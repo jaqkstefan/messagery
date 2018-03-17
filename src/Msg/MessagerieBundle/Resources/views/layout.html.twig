@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>{% block title %}Messagerie{% endblock %}</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1" name="viewport">
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('messagerie/asset/css/font-awesome.css') }}">
+            <link rel="stylesheet" href="{{ asset('messagerie/asset/simple-line-icons/simple-line-icons.css') }}">
+            <link rel="stylesheet" href="{{ asset('messagerie/asset/css/bootstrap.css') }}">
+        {% endblock %}
+        
+    </head class="page-header-fixed page-sidebar-closed-hide-logo page-content-white">
+    <body>
+
+        {% block body %}{% endblock %}
+
+        {% block javascripts %}
+            <script src="{{ asset('messagerie/asset/js/jquery-2.1.1.js') }}"></script>
+        {% endblock %}
+
+    </body>
+</html>

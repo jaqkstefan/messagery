@@ -1,0 +1,161 @@
+<script type="text/javascript">
+
+angular.module('myApp')
+    .controller('MessagerieController', function( $scope, $window, $http, $interval, $timeout, $location, $anchorScroll, Upload){
+        
+        $scope.user = {
+            id: {{app.user.id}}
+        };
+        $scope.members = [];
+        $scope.currentUser = null;
+        $scope.onlines = [];
+        $scope.discussions = [];
+        $scope.messages = [];
+
+        $http.get("{{path('messagerie_members')}}").success(function(data){
+            $scope.members = data.members;
+        });
+
+        $scope.fetch = function(timeout) {
+            if(timeout == undefined)
+                timeout = 25000;
+            $timeout(function(){
+                $http.get("{{path('messagerie_discussions')}}").success(function(data){
+                    $scope.onlines = data.onlines;
+                    $scope.discussions = data.discussions;
+                    $scope.fetch();
+                }).error(function(data){
+                    $scope.fetch();
+                });
+            }, timeout);
+        };
+        $scope.fetch(0);
+
+        $scope.close = function() {
+            $scope.currentUser = null;
+            $scope.discussion = null;
+        };
+
+        $scope.selectUser = function(user) {
+            $scope.close();
+            $scope.currentUser = user;
+        };
+
+        $scope.selectDiscussion = function(discussion) {
+            if(discussion.creator.id == $scope.user.id) {
+                $scope.currentUser = discussion.member;
+            }else{
+                $scope.currentUser = discussion.creator;
+            }
+            $scope.discussion = discussion;
+            $scope.loadMessages();
+        };
+
+        $scope.loadMessages = function(isFirst) {
+            var url = "{{path('messagerie_messages')}}";
+            url += '?discussion='+$scope.discussion.id;
+            if($scope.messages.length <= 0){
+                url += '&order=true';
+            }
+            if(isFirst)
+                $scope.loading = true;
+            $http.get(url).success(function(data){
+                for(var index = 0; index < data.messages.length; index++) {
+                    var message = data.messages[index];
+                    if($scope.messages.indexOf(message) == -1){
+                        $scope.messages.push(message);
+                    }
+                }
+                $timeout(function(){
+                    $anchorScroll('messageBottom');
+                }, 1000);
+                $scope.loading = false;
+            }).error(function(data){
+                $scope.loading = false;
+            });
+        };
+
+        $scope.loadSeen = function(isFirst) {
+            var url = "{{path('messagerie_seen')}}";
+            url += '?discussion='+$scope.discussion.id;
+            $http.get(url).success(function(data){
+                for(var index = 0; index < data.messages.length; index++) {
+                    var message = data.messages[index];
+                    var i = $scope.messages.indexOf(message);
+                    if(i != -1){
+                        $scope.messages[i] = message;
+                    }
+                }
+            }).error(function(data){
+            });
+        };
+
+        $interval(function(){
+            if($scope.discussion) {
+                $scope.loadMessages();
+            }
+        }, 10000);
+
+        $interval(function(){
+            if($scope.discussion) {
+                $scope.loadSeen();
+            }
+        }, 15000);
+
+        $scope.deleteFile = function(file) {
+            $scope.message.file = null;
+            file = null;
+        }
+
+        $scope.file = null;
+        $scope.message = {};
+        $scope.send = function(message, file) {
+            var msg = {
+                discussion: $scope.discussion ? $scope.discussion.id : null,
+                receiver: $scope.currentUser.id,
+                content: message && message.content ? message.content : ''
+            };
+            var url = "{{path('messagerie_message')}}";
+            if(message.file || message.content) {
+                if(!message.file) {
+                    $scope.sending = true;
+                    $http.post(url, msg).success(function(data){
+                        $scope.messages.push(data.message);
+                        $scope.sending = false;
+                        $scope.message = {};
+                        message = {};
+                        $anchorScroll('messageBottom');
+                    }).error(function(data){
+                        $scope.sending = false;
+                    });
+                }else{
+                    msg.file = message.file;
+                    message.file.upload = Upload.upload({
+                        url: url,
+                        data: msg,
+                    });
+    
+                    $scope.sending = true;
+                    message.file.upload.then(function(response) {
+                        $scope.messages.push(response.data.message);
+                        $anchorScroll('messageBottom');
+                        $scope.progress = 0;
+                        $scope.sending = false;
+                        $scope.message.content = '';
+                        $scope.message.file = '';
+                        message.content = '';
+                        message.file = '';
+                        file = null;
+                        $scope.file = null;
+                    }, function(response) {
+                        $scope.sending = false;
+                        $scope.progress = 0;
+                    }, function(evt) {
+                        $scope.progress = parseInt(100.0 * evt.loaded / evt.total);
+                    });
+                }
+            }
+        };
+});
+
+</script>

@@ -1,0 +1,11 @@
+messagerie:
+    resource: "@MessagerieBundle/Resources/config/routing.yml"
+    prefix:   /
+
+msg_messagerie:
+    resource: "@MsgMessagerieBundle/Resources/config/routing.yml"
+    prefix:   /msg
+
+app:
+    resource: '@AppBundle/Controller/'
+    type: annotation

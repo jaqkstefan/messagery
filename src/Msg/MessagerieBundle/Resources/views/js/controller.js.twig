@@ -1,0 +1,295 @@
+<script type="text/javascript">
+var membres = [];
+var discussions=[]
+var messages = [];
+
+var discussionCurId;
+var destinataireCurId;
+var idLastMsgDisc;
+var $idDestinataire;
+var isAskMembre = false;
+
+angular.module('myApp.controllers', [])
+    .controller('messagerie', function( $scope, $window, $state, $http){
+    
+    var getMembreSession = function(){
+        $.ajax({
+            type: 'GET',
+            url: "{{path('msg_messagerie_getMembreSession')}}",
+            //data:{id:1}, 
+            dataType:"json",
+            success: function(data) {
+                $scope.membreCur = data;
+                console.log(data);
+            },
+            error: function() {
+                alert('La requête n\'a pas ');
+            },
+        })  
+    }
+    getMembreSession();
+    var findDiscussion = function(idDestinataire){
+        for($i = 0; $i<discussions.length; $i++){
+            var message = discussions[$i].messages[0];
+            if( message.destinateur.id == $scope.membreCur.id && message.destinataire.id == idDestinataire){
+                return discussions[$i];
+            }
+            else if(message.destinateur.id == idDestinataire && message.destinataire.id == $scope.membreCur.id){
+                return discussions[$i];
+            }
+            else;
+        }
+        return null;
+    }
+
+    $scope.getAllMembre = function(){
+        if(!isAskMembre){
+            $scope.loading_membres= true;
+            isAskMembre = true;
+        }
+        $('.page-quick-sidebar-list form.form-horizontal.list-heading').css('display', 'none');
+        $http({
+            type: 'GET',
+            url: "{{path('msg_messagerie_listMembre')}}",  
+            header: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .success(function(data, status, headers, config){
+                $scope.membres = data;
+                console.log(data);
+        })
+        .error(function() {
+                alert('La requête n\'a pas abouti');
+        })
+        .finally(function(){
+            $scope.loading_membres= false;
+            $('.page-quick-sidebar-list form.form-horizontal.list-heading').css('display', 'block');
+        })
+    }
+    //$scope.getAllMembre();
+
+    var getLastPostIdInterlocuteur = function(discussion){
+        console.log('long'+ (discussion.messages.length));
+        for($i=discussion.messages.length-1; $i>=0 ; $i--){
+            if(discussion.messages[$i].destinateur.id != $scope.membreCur.id){
+                console.log('oui '+discussion.messages[$i].destinateur.id+'--'+$scope.membreCur.id);
+                return discussion.messages[$i].id;
+            }
+            console.log('non '+discussion.messages[$i].destinataire.id+'--'+$scope.membreCur.id);
+        }
+    }
+
+    $scope.getDiscussions =function(){
+        $scope.loading_discussions= true;
+        $('h3.list-heading').css('display', 'none');
+        $http({
+            type: 'GET',
+            url: "{{path('msg_messagerie_listDiscussion')}}",  
+            header: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .success(function(data, status, headers, config){
+            discussions = data; 
+            $scope.discussions = data;
+            for($i=0; $i< data.length; $i++){
+                messages.push(data[$i].messages);
+            }
+            if($('span.charger .post').length == 1){// premier message de la discussion donc nouvelle discussion
+                discussionCurId = discussions[discussions.length -1].id;
+                idLastMsgDisc = getLastPostIdInterlocuteur(discussions[discussions.length -1]);
+                console.log('discussionCurId '+discussionCurId);
+                console.log('console.log  '+idLastMsgDisc);
+            }
+            console.log(data);
+        })
+        .error(function(error, status, headers, config){
+                alert('La requête n\'a pas abouti');
+        })
+        .finally(function(){
+            $scope.loading_discussions= false;
+            $('h3.list-heading').css('display', 'block');
+        })
+    }
+    $scope.getDiscussions();
+
+    var getMessageDisc = function(id){
+        $.ajax({
+            type: 'GET',
+            url: "{{path('msg_messagerie_getMessageDiscussion')}}", 
+            data:{id:id},  
+            dataType:"json",
+            success: function(data) {
+                $scope.messages = data;
+                console.log(data);
+            },
+            error: function() {
+                alert('La requête n\'a pas abouti');
+            },
+        })
+    }
+
+    var getMembre = function(id){
+        for($i=0; $i<membres.length; $i++){
+            if(membres[$i].id == id)
+                return membres[$i];
+        }
+        return null;
+    }
+
+    var updateDiscussion = function(){
+        //afficher les message de la discussion en cour
+        $scope.messages =[
+                {
+                    id:1, contenu: "mon premier message", date:"12:54",
+                    emetteur:{ id:1,avatar:"Metronic%20Admin%20Theme%20%231%20_%20Admin%20Dashboard_files/avatar1.jpg",
+            username:"stefanprince", lastSeen:"03:14 AM"},
+                recepteur:{ id:2,avatar:"Metronic%20Admin%20Theme%20%231%20_%20Admin%20Dashboard_files/avatar2.jpg",
+                    username:"stef2", lastSeen:"03:14 AM"},
+
+                },
+                {
+                    id:2, contenu: "mon deuxieme message",date:"02:54",
+                    emetteur:{ id:2,avatar:"Metronic%20Admin%20Theme%20%231%20_%20Admin%20Dashboard_files/avatar2.jpg",
+            username:"stef2", lastSeen:"03:14 AM"},
+                    recepteur:{ id:1,avatar:"Metronic%20Admin%20Theme%20%231%20_%20Admin%20Dashboard_files/avatar1.jpg",
+                    username:"stefanprince", lastSeen:"03:14 AM"},
+
+                },
+                {
+                    id:3, contenu: "mon premier message", date:"12:54",
+                    emetteur:{ id:1,avatar:"Metronic%20Admin%20Theme%20%231%20_%20Admin%20Dashboard_files/avatar1.jpg",
+            username:"stefanprince", lastSeen:"03:14 AM"},
+                recepteur:{ id:2,avatar:"Metronic%20Admin%20Theme%20%231%20_%20Admin%20Dashboard_files/avatar2.jpg",
+                    username:"stef2", lastSeen:"03:14 AM"},
+
+                },
+        ];
+    }
+    var i=$(".page-quick-sidebar-wrapper");
+    var a=i.find(".page-quick-sidebar-chat");
+    var e=a.find(".page-quick-sidebar-chat-user-messages");
+
+    i.find(".page-quick-sidebar-chat-user .page-quick-sidebar-back-to-list").click(function(){
+        a.removeClass("page-quick-sidebar-content-item-shown")
+    });
+    $('.nav.nav-tabs li a').click(function(){
+        if(a.hasClass('page-quick-sidebar-content-item-shown')){
+            a.removeClass("page-quick-sidebar-content-item-shown");
+        }
+    })
+
+    $scope.writeTo = function(id){
+        e.slimScroll({scrollTo:"1000000px"});
+        $('span.charger div.post:not(.init)').remove();
+        destinataireCurId = id;
+        var discus = findDiscussion(id);
+        if(discus){
+            $scope.messages = discus.messages;
+            discussionCurId = discus.id;
+            idLastMsgDisc = getLastPostIdInterlocuteur(discus);
+            console.log('discussionCurId '+discussionCurId);
+            console.log('destinataireCurId '+destinataireCurId);
+            console.log('idLastMsgDisc '+idLastMsgDisc);
+        }
+        else{
+            discussionCurId = 0;
+            idLastMsgDisc=0;
+            $scope.messages = [];
+            console.log('discussionCurId '+discussionCurId);
+            console.log('destinataireCurId '+destinataireCurId);
+            console.log('idLastMsgDisc '+idLastMsgDisc);
+        }
+        $idDestinataire = id;
+        $('.nav.nav-tabs .discussion').addClass('active');
+        $('#quick_sidebar_tab_1.page-quick-sidebar-chat').addClass('active');
+        a.addClass("page-quick-sidebar-content-item-shown");
+        $('.nav.nav-tabs .membres').removeClass('active');
+        $('#quick_sidebar_tab_2.page-quick-sidebar-chat').removeClass('active');
+        
+    };
+    $scope.send = function(){
+        $newPost = $scope.message;
+        $scope.message ="";
+        if($newPost.length !==0){
+            $http({
+                method:'POST',
+                url: '{{ path('msg_messagerie_sendMessage') }}',
+                header: {
+                    'Content-Type': 'application/json'
+                },
+                data: { message: $newPost, idDestinataire : $idDestinataire},
+            })
+            .success(function(data, status, headers, config){
+                console.log(data);
+            })
+            .error(function(error, status, headers, config){
+                console.log('error');
+            })
+            var s="";
+            var date=new Date;
+            s+='<div class="post out" id="">';
+                s+='<img class="avatar" alt="" src="Metronic%20Admin%20Theme%20%231%20_%20Admin%20Dashboard_files/'+$scope.membreCur.avatar+'"/>';
+                s+='<div class="message"><span class="arrow"></span>';
+                s+='<a href="#" class="name">'+$scope.membreCur.username+'</a>&nbsp;';
+                s+='<span class="datetime">'+ date.getHours()+':'+date.getMinutes()+'</span>',s+='<span class="body">'+$newPost+'</span></div></div>';
+            $('span.charger').append(s);
+            e.slimScroll({scrollTo:"1000000px"});
+           {# /* apres l'envoi si le nombre total de message est de 1 alors on vient de creer une discussion */ #}
+           {# if($('span.charger .post').length == 1){
+                console.log('destinataireCurId '+destinataireCurId);
+                $scope.getDiscussions();
+            }#}
+                console.log('destinataireCurId '+destinataireCurId);
+                $scope.getDiscussions();
+        }
+    };
+
+    var charger = function(){
+        setTimeout(function(){
+            console.log('idDisc '+discussionCurId+'<--->destinataireCurId'+destinataireCurId+'<---> idLastMsgDisc '+idLastMsgDisc);
+            $.ajax({
+                type: 'GET',
+                url: "{{path('msg_messagerie_answerMessage')}}",  
+                data: { idDisc:discussionCurId, destinataireCurId: destinataireCurId, idLastMsgDisc: idLastMsgDisc},
+                dataType:"json",
+                success: function(data){
+                    if(data.length > 0){
+                        $('.alert-message').show('slow');
+                        setTimeout(function(){
+                            $('.alert-message').hide('slow');
+                        },3000);
+
+                        for($i=0; $i<data.length; $i++){
+                            if($('span.charger .post.in:last').attr('id') != data[$i]){
+                                var s="";
+                                s+='<div class="post in" id='+data[$i].id+'>';
+                                    s+='<img class="avatar" alt="" src="Metronic%20Admin%20Theme%20%231%20_%20Admin%20Dashboard_files/'+data[$i].destinateur.avatar+'"/>';
+                                    s+='<div class="message"><span class="arrow"></span>';
+                                    s+='<a href="#" class="name">'+data[$i].destinateur.username+'</a>&nbsp;';
+                                    s+='<span class="datetime">'+data[$i].dateSend+'</span>',s+='<span class="body">'+data[$i].contenu+'</span></div></div>';
+                                $('span.charger').append(s);                                  
+                            }
+                        }
+                        idLastMsgDisc = data[data.length -1].id;
+                        e.slimScroll({scrollTo:"1000000px"});
+                        $scope.getDiscussions();
+                    }
+                    console.log(data);
+                },
+                error: function() {
+                    alert('La requête n\'a pas abouti');
+                },
+            });
+           charger();
+        },15000);
+    }
+    charger();
+
+    a.find(".page-quick-sidebar-chat-user-form .form-control").keypress(function(i){
+        return 13==i.which ? ($scope.send(),!1) : void 0
+    })
+})
+
+</script>

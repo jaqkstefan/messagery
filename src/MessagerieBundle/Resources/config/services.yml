@@ -1,0 +1,14 @@
+services:
+#    messagerie.example:
+#        class: MessagerieBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    authentication_handler:
+        class: MessagerieBundle\Handler\AuthenticationHandler
+        calls: 
+            - ["setContainer", ["@service_container"]]
+    ui.twig_extension:
+            class: MessagerieBundle\Twig\UIExtension
+            public: false
+            # arguments: ['@mcssym.repository.config']
+            tags:
+                - { name: twig.extension }

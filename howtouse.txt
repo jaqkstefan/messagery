@@ -1,0 +1,16 @@
+Le projet est une application PHP tournant grace au framework Symfony 3. Donc toutes les commandes applicables à ce framework sont applicables au projet! Les configurations serveurs
+sont à insérer dans le fichier app/config/config.yml.
+Pour créer la base de donnée c'est possible en ligne de commande avec la commande 
+	php bin/console doctrine:database:create
+Ensuite effectuer la commande
+	php bin/console doctrine:schema:update --force 
+pour mettre à jour les tables de la base de données.
+Pour créer un administrateur, c'est pour possible via une route en GET accessible uniquement en localhost pour des raisons de sécurité! Cette route est 
+/_create/username/prenom/nom/password
+où 
+- username est le nom d'utilisateur
+- nom est le nom de l'administrateur
+- prenom est son prénom
+- password est le mot de passe
+
+L'accès se fait uniquement après connexion par username et password.

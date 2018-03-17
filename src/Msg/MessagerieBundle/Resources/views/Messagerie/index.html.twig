@@ -1,0 +1,31 @@
+{% extends "MsgMessagerieBundle::layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('messagerie/asset/css/layout2.css') }}">
+    <link rel="stylesheet" href="{{ asset('messagerie/asset/css/animate.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="row alert-message animated" style=" display:none; text-align: center; height: 39px; font-size: 23px; background: #99a89f;"> 
+Vous avez un nouveau message
+</div>
+    {% include "MsgMessagerieBundle:messagerie:messagerie.html.twig" %}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('messagerie/asset/js/jquery_004.js') }}"></script>
+    <script src="{{ asset('messagerie/asset/js/jquery_013.js') }}"></script>
+
+    <script src="{{ asset('messagerie/asset/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('messagerie/asset/js/app.js') }}"></script>
+    <script src="{{ asset('messagerie/asset/js/angular-1.4.4.js') }}"></script>
+    <script src="{{ asset('messagerie/asset/js/angular-ui-router.js') }}"></script>
+    <script src="{{ asset('messagerie/asset/js/quick-sidebar.js') }}"></script>
+    
+        {% include 'MsgMessagerieBundle:js:app.js.twig'%}
+        {% include 'MsgMessagerieBundle:js:controller.js.twig'%}
+
+{% endblock %}

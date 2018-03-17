@@ -1,0 +1,27 @@
+msg_messagerie_homepage:
+    path:     /
+    defaults: { _controller: MsgMessagerieBundle:Messagerie:messagerie }
+
+msg_messagerie_listMembre:
+    path:     /listMembre
+    defaults: { _controller: MsgMessagerieBundle:Messagerie:getAllMembres }
+
+msg_messagerie_sendMessage:
+    path:     /addMessage
+    defaults: { _controller: MsgMessagerieBundle:Messagerie:sendMessage }
+
+msg_messagerie_answerMessage:
+    path:     /answerMessage
+    defaults: { _controller: MsgMessagerieBundle:Messagerie:answerMessage }
+
+msg_messagerie_listDiscussion:
+    path:     /listDiscussion
+    defaults: { _controller: MsgMessagerieBundle:Messagerie:getDiscussionsMembre }
+
+msg_messagerie_getMessageDiscussion:
+    path:     /getMessageDiscussion
+    defaults: { _controller: MsgMessagerieBundle:Messagerie:getMessageDiscussion }
+
+msg_messagerie_getMembreSession:
+    path:     /getMembreSession
+    defaults: { _controller: MsgMessagerieBundle:Messagerie:getMembreSession }

@@ -1,0 +1,23 @@
+{% extends "MessagerieBundle::base.html.twig" %}
+{% block title %}
+    {{title is defined ? title : 'Accueil'}}
+{% endblock title %}
+{% block body %}
+    <body ng-app="myApp">
+        {% include "MessagerieBundle:Components:nav.html.twig" %}
+        <div ng-controller="MessagerieController" class="wrapper layout">
+            {{ block('layout') }}
+        </div>
+    </body>
+{% endblock body %}
+
+{% block javascripts %}
+    <script src="{{asset('assets/js/plugins/angular/angular.min.js')}}"></script>
+    <script src="{{asset('assets/js/plugins/angular/angular-animate.min.js')}}"></script>
+    <script src="{{asset('assets/js/plugins/moment/moment.min.js')}}"></script>
+    <script src="{{asset('assets/js/plugins/moment/moment.locales.js')}}"></script>
+    <script src="{{asset('assets/js/plugins/ng-file-upload/ng-file-upload-shim.min.js')}}"></script>
+    <script src="{{asset('assets/js/plugins/ng-file-upload/ng-file-upload.min.js')}}"></script>
+    {% include "MessagerieBundle:Js:app.js.twig" %}
+    {% include "MessagerieBundle:Js:controller.js.twig" %}
+{% endblock javascripts %}

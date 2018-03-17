@@ -1,0 +1,56 @@
+<script type="text/javascript">
+var app = angular.module('myApp', ['ngFileUpload']);
+
+  app.config(function ($interpolateProvider, $locationProvider, $httpProvider) {
+    $interpolateProvider.startSymbol('[[');
+    $interpolateProvider.endSymbol(']]');
+    
+        if (window.history && window.history.pushState) {
+            $locationProvider.html5Mode(true);
+        }
+    
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+	});
+  
+  app.filter('moment', function() {
+      return function(dateString, format) {
+          var lang = $('html').attr('lang');
+          moment.locale(lang);
+          if (!format) {
+              return moment(dateString).fromNow();
+          } else {
+              return moment(dateString).format(format);
+          }
+      };
+  });
+  
+
+app.directive('ngEnter', function() {
+  return {
+      require: 'ngModel',
+      restrict: 'A',
+      link: function(scope, elem, attrs) {
+
+          // Detecting key down event
+          elem.bind('keypress keydown', function(event) {
+              var code = event.keyCode || event.which;
+              // Detecting enter key press
+              if (code === 13) {
+                  // Checking element to be textarea
+                  if (elem[0].type == 'textarea') {
+                      // Detecting shift/ctrl/alt key press
+                      if (!event.shiftKey && !event.ctrlKey && !event.altKey) {
+                          event.preventDefault();
+                          scope.$apply(attrs.ngEnter);
+                      }
+                  } else {
+                      event.preventDefault();
+                      scope.$apply(attrs.ngEnter);
+                  }
+              }
+          });
+      }
+  };
+});
+
+ </script>

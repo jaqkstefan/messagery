@@ -1,0 +1,17 @@
+<script type="text/javascript">
+/*
+angular.module('app', ['app.controllers', 'app.routes', 'app.services', 'app.directives'])
+.config(function($ionicConfigProvider) {
+    $ionicConfigProvider.scrolling.jsScrolling(false);
+    $ionicConfigProvider.tabs.position('bottom');
+})
+*/
+angular
+  .module('myApp', ['ui.router', 'myApp.controllers'])
+
+  .config(function ($interpolateProvider) {
+	$interpolateProvider.startSymbol('[[');
+	$interpolateProvider.endSymbol(']]');
+	});
+
+ </script>

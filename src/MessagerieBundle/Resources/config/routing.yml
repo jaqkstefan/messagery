@@ -1,0 +1,35 @@
+app_login:
+    path:     /login
+    defaults: { _controller: MessagerieBundle:Security:login }
+
+app_login_check:
+    path:     /login_check
+    defaults: { _controller: MessagerieBundle:Security:check }
+
+app_logout:
+    path:     /logout
+    defaults: { _controller: MessagerieBundle:Security:logout }
+
+messagerie_homepage:
+    path:     /
+    defaults: { _controller: MessagerieBundle:Default:index }
+
+messagerie_members:
+    path:     /members
+    defaults: { _controller: MessagerieBundle:Default:members }
+
+messagerie_messages:
+    path:     /messages
+    defaults: { _controller: MessagerieBundle:Default:messages }
+
+messagerie_seen:
+    path:     /seen
+    defaults: { _controller: MessagerieBundle:Default:seen }
+
+messagerie_message:
+    path:     /message
+    defaults: { _controller: MessagerieBundle:Default:message }
+
+messagerie_discussions:
+    path:     /discussions
+    defaults: { _controller: MessagerieBundle:Default:discussions }

@@ -1,0 +1,183 @@
+{% extends "MessagerieBundle::layout.html.twig" %}
+{% block layout %}
+    <div class="layout-col-3 layout-col-wide layout-col with-footer bg-info">
+        <div class="layout-col-content">
+            <ul class="layout-items items-3">
+                    <li class="layout-item">
+                            <a class="layout-link" >
+                                <i class="now-ui-icons shopping_shop"></i>
+                                <p>Accueil</p>
+                            </a>
+                        </li><li class="layout-item">
+                                <a class="layout-link" >
+                                    <i class="now-ui-icons ui-2_chat-round"></i>
+                                    <p>Messages</p>
+                                </a>
+                            </li><li class="layout-item">
+                                    <a class="layout-link" >
+                                        <i class="now-ui-icons business_bank"></i>
+                                        <p>Abonnements</p>
+                                    </a>
+                                </li><li class="layout-item">
+                                        <a class="layout-link" >
+                                            <i class="now-ui-icons media-2_note-03"></i>
+                                            <p>Multimedia</p>
+                                        </a>
+                                    </li><li class="layout-item">
+                                            <a class="layout-link"  >
+                                                <i class="now-ui-icons education_agenda-bookmark"></i>
+                                                <p>Dossiers</p>
+                                            </a>
+                                        </li><li class="layout-item">
+                                                <a class="layout-link" >
+                                                    <i class="now-ui-icons education_atom"></i>
+                                                    <p>Communautés</p>
+                                                </a>
+                                            </li><li class="layout-item">
+                                                    <a class="layout-link" >
+                                                        <i class="now-ui-icons ui-1_settings-gear-63"></i>
+                                                        <p>Paramètres</p>
+                                                    </a>
+                                                </li>
+            </ul>
+        </div>
+        <div class="layout-col-footer bg-info">
+            <p class="text-center">
+                <a class="layout-link" href="#">A Propos</a>&nbsp;&middot;&nbsp;
+                <a class="layout-link" href="#">Contact</a>&nbsp;&middot;&nbsp;
+                <a class="layout-link" href="#">FAQ</a>&nbsp;&middot;&nbsp;
+                <a class="layout-link" href="#">Conditions d'Utilisation</a>
+            </p>
+        </div>
+    </div>
+    <div class="layout-col-3 layout-col-wide layout-col">
+        <div class="layout-col-content content-margin right-bordered">
+            <h5><small>En ligne</small></h5>
+            <ul class="layout-list">
+                <li ng-repeat="discussion in onlines" ng-click="selectDiscussion(discussion)" class="layout-list-item layout-list-item-imaged">
+                    <img ng-if="discussion.creator.id != user.id" ng-src="[[discussion.creator.photo]]" alt="" class="img-circle">
+                    <img ng-if="discussion.creator.id = user.id" ng-src="[[discussion.member.photo]]" alt="" class="img-circle">
+                    <div class="layout-list-item-content">
+                        <div class="layout-list-item-content-top">
+                            <span ng-if="discussion.creator.id != user.id">[[discussion.creator.longname]]<br/>
+                                <small ng-if="discussion.creator.id != user.id">[[discussion.creator.job]]</small>
+                            </span>
+                            <span ng-if="discussion.creator.id == user.id">[[discussion.member.longname]]<br/>
+                                <small ng-if="discussion.creator.id == user.id">[[discussion.member.job]]</small>
+                            </span>
+                            <a class="pull-right">
+                                <i class="now-ui-icons ui-1_simple-remove"></i>
+                            </a>
+                        </div>
+                        <p>[[discussion.lastMessage.content]]<br/>
+                            <small class="text-muted">[[discussion.lastMessage.receivedAt|moment]]</small>
+                            <a ng-if="discussion.lastMessage.seen" class="pull-right">
+                                <i class="now-ui-icons ui-1_check"></i>
+                            </a>
+                        </p>
+                    </div>
+                </li>
+            </ul>
+            <h5><small>Toutes les discussions</small></h5>
+            <ul class="layout-list">
+                <li ng-repeat="discussion in discussions" ng-click="selectDiscussion(discussion)" class="layout-list-item layout-list-item-imaged">
+                    <img ng-if="discussion.creator.id != user.id" ng-src="[[discussion.creator.photo]]" alt="" class="img-circle">
+                    <img ng-if="discussion.creator.id = user.id" ng-src="[[discussion.member.photo]]" alt="" class="img-circle">
+                    <div class="layout-list-item-content">
+                        <div class="layout-list-item-content-top">
+                            <span ng-if="discussion.creator.id != user.id">[[discussion.creator.longname]]<br/>
+                                <small ng-if="discussion.creator.id != user.id">[[discussion.creator.job]]</small>
+                            </span>
+                            <span ng-if="discussion.creator.id == user.id">[[discussion.member.longname]]<br/>
+                                <small ng-if="discussion.creator.id == user.id">[[discussion.member.job]]</small>
+                            </span>
+                            <a class="pull-right">
+                                <i class="now-ui-icons ui-1_simple-remove"></i>
+                            </a>
+                        </div>
+                        <p>[[discussion.lastMessage.content]]<br/>
+                            <small class="text-muted">[[discussion.lastMessage.receivedAt|moment]]</small>
+                            <a ng-if="discussion.lastMessage.seen" class="pull-right">
+                                <i class="now-ui-icons ui-1_check"></i>
+                            </a>
+                        </p>
+                    </div>
+                </li>
+            </ul>
+            <h5><small>Membres</small></h5>
+            <ul class="layout-list">
+                <li ng-repeat="member in members" ng-click="selectUser(member)" class="layout-list-item layout-list-item-imaged">
+                    <img ng-src="[[member.photo]]" alt="" class="img-circle">
+                    <div class="layout-list-item-content">
+                        <div class="layout-list-item-content-top">
+                            <span>[[member.longname]]<br/>
+                                <small>[[member.job]]</small>
+                            </span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="layout-col-6 layout-col-wide layout-col with-footer">
+        <div ng-if="currentUser" class="layout-col-content layout-col-content-messages">
+            <div class="layout-col-content-header">
+                <div class="layout-col layout-col-6 layout-col-content-header-imaged">
+                    <img ng-src="[[currentUser.photo]]" alt="" class="img-circle">
+                    <div class="layout-col-content-header-info">
+                        <div class="layout-col-content-header-title">[[currentUser.longname]]</div>
+                        <div class="layout-col-content-header-subtitle">[[currentUser.job]]</div>
+                    </div>
+                </div>
+                <div class="layout-col layout-col-6">
+                    <div class="layout-col-content-header-info text-right">
+                        <div class="layout-col-content-header-subtitle">Objet</div>
+                        <div class="layout-col-content-header-title">Accès Média</div>
+                    </div>
+                </div>
+            </div>
+            <div class="layout-messages">
+                <div ng-repeat="message in messages" ng-class="{'right': message.sender.id == user.id}" class="layout-message-container">
+                    <div class="layout-message">
+                        <div ng-if="message.file" class="layout-message-media">
+                            <img ng-if="message.file.type == 'image'" ng-src="[[message.file.path]]" alt="" class="">
+                            <video ng-if="message.file.type == 'video'" ng-src="[[message.file.path]]" controls></video>
+                            <a class="btn btn-block btn-success btn-simple" ng-if="message.file.type != 'image' && message.file.type != 'video'" href="[[message.file.path]]" target="_blank">
+                                <i class="now-ui-icons files_paper"></i> [[message.file.name]]
+                            </a>
+                        </div>
+                        <div class="layout-message-text">
+                            [[message.content]]
+                        </div>
+                        <div class="layout-message-meta">
+                            [[message.receivedAt|moment]]
+                            <span ng-if='message.sender.id == user.id && message.seen' >&nbsp;<i class="now-ui-icons ui-1_check"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="messageBottom" style="visibility: invisible;"></div>
+            </div>
+        </div>
+        <div ng-if="currentUser" class="layout-col-footer">
+            <p ng-show="message.file">[[message.file.name]]&nbsp;<button ng-click="deleteFile(message.file)" class="btn btn-simple btn-icon btn-danger"><i class="now-ui-icons ui-1_simple-remove"></i></button>
+            <div ng-if="sending" class="progress">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: [[progress]]%" aria-valuenow="[[progress]]" aria-valuemin="0" aria-valuemax="100" ></div>
+            </div>
+            <form action="/message" method="post" enctype="multipart/form-data">
+                <div class="input-group">
+                    <textarea name="message" ng-enter="send(message)" ng-model="message.content" id="message" placeholder="Entrez votre message" rows="1" class="form-control"></textarea>
+                    <span class="input-group-btn">
+                        <button type="button" ng-click="send(message)" class="btn btn-simple btn-icon btn-round btn-info">
+                            <i class="now-ui-icons ui-1_send"></i>
+                        </button>
+                    </span>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-simple btn-info" ngf-select='' ng-model='message.file' name='file' ngf-max-size="8MB" ngf-min-height="100">
+                        <i class="now-ui-icons files_paper"></i> Fichier
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock layout %}
